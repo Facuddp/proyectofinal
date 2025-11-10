@@ -394,7 +394,8 @@ if len(variables_seleccionadas) >= 2:
     st.dataframe(corr_mat, use_container_width=True)
 
     # Heatmap with Altair
-    corr_data = corr_mat.reset_index().melt(id_vars='index')
+    corr_data = corr_mat.reset_index()
+    corr_data = corr_data.melt(id_vars=corr_data.columns[0])
     corr_data.columns = ['Variable_X', 'Variable_Y', 'Correlacion']
     heat = alt.Chart(corr_data).mark_rect().encode(
         x=alt.X('Variable_X:O', sort=None),
