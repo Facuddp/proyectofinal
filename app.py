@@ -372,41 +372,13 @@ else:
     df_fore['Tipo'] = 'Pronóstico'
     df_comb = pd.concat([df_hist, df_fore], ignore_index=True)
 
-    # Plot with Altair
-    chart = alt.Chart(df_comb).mark_line().encode(
-        x=alt.X('Tiempo:T', title='Tiempo'),
-        y=alt.Y('Valor:Q', title=predict_var),
-        color='Tipo:N',
-        tooltip=['Tiempo:T', 'Valor:Q', 'Tipo:N']
-    ).properties(height=320, width='container', title=f"Histórico + Pronóstico ({metodo})")
-    st.altair_chart(chart, use_container_width=True)
+
 
     # Show recent numeric summary
     st.markdown("### Resumen del pronóstico")
     st.write(df_fore.set_index('Tiempo').round(3))
 
-# ------------------------------
-# --------- CORRELACIONES -------
-# ------------------------------
-st.markdown("## 🔍 Correlación entre variables seleccionadas")
-if len(variables_seleccionadas) >= 2:
-    corr_mat = df_final[variables_seleccionadas].corr().round(3)
-    st.dataframe(corr_mat, use_container_width=True)
 
-    # Heatmap with Altair
-    corr_data = corr_mat.reset_index()
-    corr_data = corr_data.melt(id_vars=corr_data.columns[0])
-    corr_data.columns = ['Variable_X', 'Variable_Y', 'Correlacion']
-    heat = alt.Chart(corr_data).mark_rect().encode(
-        x=alt.X('Variable_X:O', sort=None),
-        y=alt.Y('Variable_Y:O', sort=None),
-        color=alt.Color('Correlacion:Q', scale=alt.Scale(scheme='redyellowblue', domain=[-1, 1])),
-        tooltip=['Variable_X', 'Variable_Y', 'Correlacion']
-    ).properties(height=400, width=600, title="Mapa de Calor - Correlaciones")
-    st.altair_chart(heat + alt.Chart(corr_data).mark_text(size=10).encode(
-        x='Variable_X:O', y='Variable_Y:O', text=alt.Text('Correlacion:Q', format='.2f')), use_container_width=True)
-else:
-    st.info("Selecciona al menos 2 variables en el sidebar para visualizar correlaciones.")
 
 # ------------------------------
 # --------- ALARMAS -------------
